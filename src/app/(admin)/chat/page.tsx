@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useRef, useState, useCallback } from "react";
+import React, { useMemo, useRef, useState, useCallback, Suspense } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Image from "next/image";
@@ -326,6 +326,7 @@ export default function ChatPage() {
   
 
   return (
+    <Suspense fallback={<div />}> 
     <div className="flex flex-col gap-4 sm:gap-6 h-[calc(100vh-2rem)]">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">大模型对话</h1>
@@ -560,6 +561,7 @@ export default function ChatPage() {
         </section>
       </div>
     </div>
+    </Suspense>
   );
 }
 
