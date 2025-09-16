@@ -2,37 +2,69 @@ import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
+type Provider = "deepseek" | "gemini";
+
 export async function POST(req: NextRequest) {
   try {
-    const apiKey = process.env.DEEPSEEK_API_KEY;
-    if (!apiKey) {
-      return new Response("Missing server API key", { status: 500 });
+    const { messages, temperature = 0.7, provider: clientProvider }: { messages: Array<{ role: string; content: string }>; temperature?: number; provider?: Provider } = await req.json();
+
+    // 选择提供方：优先客户端指定；否则根据可用的服务端密钥自动选择
+    const hasDeepseek = Boolean(process.env.DEEPSEEK_API_KEY);
+    const hasGemini = Boolean(process.env.GOOGLE_API_KEY);
+    const provider: Provider = clientProvider ?? (hasDeepseek ? "deepseek" : hasGemini ? "gemini" : "deepseek");
+
+    const encoder = new TextEncoder();
+
+    if (provider === "gemini") {
+      if (!hasGemini) {
+        return new Response("Missing GOOGLE_API_KEY", { status: 500 });
+      }
+
+      // 将 OpenAI 样式的消息转换为 Gemini 的 contents 结构
+      const contents = (messages || []).map((m) => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: String(m.content ?? "") }],
+      }));
+
+      const gemUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GOOGLE_API_KEY}`;
+      const gmRes = await fetch(gemUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents, generationConfig: { temperature } }),
+      });
+      if (!gmRes.ok) {
+        const txt = await gmRes.text().catch(() => "");
+        return new Response(`Upstream error (gemini): ${txt || gmRes.statusText}`, { status: 500 });
+      }
+      const data = await gmRes.json().catch(() => ({} as any));
+      const text: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+      // 非流式：一次性输出一条 delta，沿用前端解析协议
+      const payload = JSON.stringify({ delta: text, reasoning: undefined });
+      return new Response(payload + "\n", {
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+      });
     }
 
-    const { messages, temperature = 0.7 } = await req.json();
+    // 默认 DeepSeek（流式）
+    if (!hasDeepseek) {
+      return new Response("Missing DEEPSEEK_API_KEY", { status: 500 });
+    }
 
     const dsRes = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
       },
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        messages,
-        temperature,
-        stream: true,
-      }),
+      body: JSON.stringify({ model: "deepseek-chat", messages, temperature, stream: true }),
     });
 
     if (!dsRes.ok || !dsRes.body) {
       const txt = await dsRes.text().catch(() => "");
-      return new Response(`Upstream error: ${txt || dsRes.statusText}`, { status: 500 });
+      return new Response(`Upstream error (deepseek): ${txt || dsRes.statusText}`, { status: 500 });
     }
 
-    const encoder = new TextEncoder();
     const decoder = new TextDecoder();
-
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         const reader = dsRes.body!.getReader();
