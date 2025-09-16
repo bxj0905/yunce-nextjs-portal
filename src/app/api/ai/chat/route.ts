@@ -14,6 +14,10 @@ export async function OPTIONS() {
   return new Response(null, { headers: corsHeaders });
 }
 
+export async function GET() {
+  return new Response("ok", { headers: { "Content-Type": "text/plain; charset=utf-8", ...corsHeaders } });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { messages, temperature = 0.7, provider: clientProvider }: { messages: Array<{ role: string; content: string }>; temperature?: number; provider?: Provider } = await req.json();
