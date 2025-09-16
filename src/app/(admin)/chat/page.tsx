@@ -39,6 +39,30 @@ type Attachment = {
 
 const STORAGE_KEY = "yunce_ai_chat_sessions_v1";
 
+function BootQuerySender({
+  loaded,
+  activeSession,
+  bootAsked,
+  setBootAsked,
+  handleSend,
+}: {
+  loaded: boolean;
+  activeSession: ChatSession | null;
+  bootAsked: boolean;
+  setBootAsked: React.Dispatch<React.SetStateAction<boolean>>;
+  handleSend: (preset?: string) => void;
+}) {
+  const searchParams = useSearchParams();
+  React.useEffect(() => {
+    if (!loaded || !activeSession || bootAsked) return;
+    const q = (searchParams?.get("q") || "").trim();
+    if (!q) return;
+    setBootAsked(true);
+    Promise.resolve().then(() => handleSend(q));
+  }, [loaded, activeSession, bootAsked, handleSend, searchParams]);
+  return null;
+}
+
 export default function ChatPage() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const withBaseOnce = useCallback((p: string) => {
@@ -58,7 +82,6 @@ export default function ChatPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isSending, setIsSending] = useState<boolean>(false);
   const [loaded, setLoaded] = useState<boolean>(false);
-  const searchParams = useSearchParams();
   const [bootAsked, setBootAsked] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -146,7 +169,7 @@ export default function ChatPage() {
     const userAndAssistantMessages = [systemPrompt, ...history, { role: "user", content: newMsg.text }];
 
     setIsSending(true);
-    const apiUrl = withBaseOnce("/api/ai/chat");
+    const apiUrl = (process.env.NEXT_PUBLIC_CHAT_API?.trim() || "") || withBaseOnce("/api/ai/chat");
     fetch(apiUrl, {
       method: "POST",
       headers: {
@@ -276,14 +299,7 @@ export default function ChatPage() {
     // loaded 只在初次加载后为 true，随后不再变化
   }, [loaded]);
 
-  // 若首页带来 ?q= 参数，创建会话后自动发送
-  React.useEffect(() => {
-    if (!loaded || !activeSession || bootAsked) return;
-    const q = (searchParams?.get("q") || "").trim();
-    if (!q) return;
-    setBootAsked(true);
-    Promise.resolve().then(() => handleSend(q));
-  }, [loaded, activeSession, searchParams, bootAsked, handleSend]);
+  // 若首页带来 ?q= 参数，创建会话后自动发送（放入 Suspense 边界内的子组件）
 
   const createSession = () => {
     const s: ChatSession = { id: `s-${Date.now()}`, title: "新的对话", createdAt: Date.now(), messages: [] };
@@ -327,6 +343,13 @@ export default function ChatPage() {
 
   return (
     <Suspense fallback={<div />}> 
+    <BootQuerySender
+      loaded={loaded}
+      activeSession={activeSession}
+      bootAsked={bootAsked}
+      setBootAsked={setBootAsked}
+      handleSend={handleSend}
+    />
     <div className="flex flex-col gap-4 sm:gap-6 h-[calc(100vh-2rem)]">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">大模型对话</h1>
