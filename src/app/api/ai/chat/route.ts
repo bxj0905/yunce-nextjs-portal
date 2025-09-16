@@ -36,8 +36,9 @@ export async function POST(req: NextRequest) {
         const txt = await gmRes.text().catch(() => "");
         return new Response(`Upstream error (gemini): ${txt || gmRes.statusText}`, { status: 500 });
       }
-      const data = await gmRes.json().catch(() => ({} as any));
-      const text: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+      const data: unknown = await gmRes.json().catch(() => ({} as unknown));
+      const safe = (obj: unknown): any => (obj ?? {}) as any;
+      const text: string = safe(data).candidates?.[0]?.content?.parts?.[0]?.text ?? "";
       // 非流式：一次性输出一条 delta，沿用前端解析协议
       const payload = JSON.stringify({ delta: text, reasoning: undefined });
       return new Response(payload + "\n", {

@@ -59,7 +59,7 @@ function BootQuerySender({
     if (!q) return;
     setBootAsked(true);
     Promise.resolve().then(() => handleSend(q));
-  }, [loaded, activeSession, bootAsked, handleSend, searchParams]);
+  }, [loaded, activeSession, bootAsked, handleSend, searchParams, setBootAsked]);
   return null;
 }
 
