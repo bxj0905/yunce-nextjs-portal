@@ -10,6 +10,12 @@ import Image from "next/image";
 
 export default function UserMetaCard() {
   const { isOpen, openModal, closeModal } = useModal();
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+  const withBaseOnce = (p: string) => {
+    if (p.startsWith('http')) return p;
+    if (basePath && p.startsWith(basePath + '/')) return p;
+    return `${basePath}${p.startsWith('/') ? '' : '/'}${p}`;
+  };
   const handleSave = () => {
     // Handle save logic here
     console.log("Saving changes...");
@@ -24,7 +30,7 @@ export default function UserMetaCard() {
               <Image
                 width={80}
                 height={80}
-                src="/images/user/owner.jpg"
+                src={withBaseOnce('/images/user/owner.jpg')}
                 alt="user"
               />
             </div>
@@ -34,11 +40,11 @@ export default function UserMetaCard() {
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Team Manager
+                  团队经理
                 </p>
                 <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Arizona, United States
+                  四川，中国
                 </p>
               </div>
             </div>
@@ -132,7 +138,7 @@ export default function UserMetaCard() {
                 fill=""
               />
             </svg>
-            Edit
+            
           </button>
         </div>
       </div>
@@ -140,17 +146,17 @@ export default function UserMetaCard() {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Personal Information
+              编辑个人信息
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+              更新您的信息以保持资料最新。
             </p>
           </div>
           <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Social Links
+                  社交链接
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
@@ -168,7 +174,7 @@ export default function UserMetaCard() {
                   </div>
 
                   <div>
-                    <Label>Linkedin</Label>
+                    <Label>LinkedIn</Label>
                     <Input
                       type="text"
                       defaultValue="https://www.linkedin.com/company/pimjo"
@@ -186,32 +192,32 @@ export default function UserMetaCard() {
               </div>
               <div className="mt-7">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Personal Information
+                  个人信息
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
+                    <Label>名</Label>
                     <Input type="text" defaultValue="Musharof" />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
+                    <Label>姓</Label>
                     <Input type="text" defaultValue="Chowdhury" />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Email Address</Label>
+                    <Label>邮箱</Label>
                     <Input type="text" defaultValue="randomuser@pimjo.com" />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
+                    <Label>手机</Label>
                     <Input type="text" defaultValue="+09 363 398 46" />
                   </div>
 
                   <div className="col-span-2">
-                    <Label>Bio</Label>
+                    <Label>简介</Label>
                     <Input type="text" defaultValue="Team Manager" />
                   </div>
                 </div>
@@ -219,10 +225,10 @@ export default function UserMetaCard() {
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={closeModal}>
-                Close
+                取消
               </Button>
               <Button size="sm" onClick={handleSave}>
-                Save Changes
+                保存
               </Button>
             </div>
           </form>

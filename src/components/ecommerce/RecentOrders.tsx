@@ -25,8 +25,8 @@ const tableData: Product[] = [
   {
     id: 1,
     name: "MacBook Pro 13”",
-    variants: "2 Variants",
-    category: "Laptop",
+    variants: "2 个型号",
+    category: "笔记本电脑",
     price: "$2399.00",
     status: "Delivered",
     image: "/images/product/product-01.jpg", // Replace with actual image URL
@@ -34,8 +34,8 @@ const tableData: Product[] = [
   {
     id: 2,
     name: "Apple Watch Ultra",
-    variants: "1 Variant",
-    category: "Watch",
+    variants: "1 个型号",
+    category: "手表",
     price: "$879.00",
     status: "Pending",
     image: "/images/product/product-02.jpg", // Replace with actual image URL
@@ -43,8 +43,8 @@ const tableData: Product[] = [
   {
     id: 3,
     name: "iPhone 15 Pro Max",
-    variants: "2 Variants",
-    category: "SmartPhone",
+    variants: "2 个型号",
+    category: "智能手机",
     price: "$1869.00",
     status: "Delivered",
     image: "/images/product/product-03.jpg", // Replace with actual image URL
@@ -52,8 +52,8 @@ const tableData: Product[] = [
   {
     id: 4,
     name: "iPad Pro 3rd Gen",
-    variants: "2 Variants",
-    category: "Electronics",
+    variants: "2 个型号",
+    category: "电子产品",
     price: "$1699.00",
     status: "Canceled",
     image: "/images/product/product-04.jpg", // Replace with actual image URL
@@ -61,8 +61,8 @@ const tableData: Product[] = [
   {
     id: 5,
     name: "AirPods Pro 2nd Gen",
-    variants: "1 Variant",
-    category: "Accessories",
+    variants: "1 个型号",
+    category: "配件",
     price: "$240.00",
     status: "Delivered",
     image: "/images/product/product-05.jpg", // Replace with actual image URL
@@ -75,7 +75,7 @@ export default function RecentOrders() {
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Recent Orders
+            最近订单
           </h3>
         </div>
 
@@ -116,10 +116,10 @@ export default function RecentOrders() {
                 strokeWidth="1.5"
               />
             </svg>
-            Filter
+            筛选
           </button>
           <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-            See all
+            查看全部
           </button>
         </div>
       </div>
@@ -132,25 +132,25 @@ export default function RecentOrders() {
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Products
+                商品
               </TableCell>
               <TableCell
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Category
+                类别
               </TableCell>
               <TableCell
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Price
+                价格
               </TableCell>
               <TableCell
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Status
+                状态
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -198,7 +198,11 @@ export default function RecentOrders() {
                         : "error"
                     }
                   >
-                    {product.status}
+                    {product.status === "Delivered"
+                      ? "已送达"
+                      : product.status === "Pending"
+                      ? "待处理"
+                      : "已取消"}
                   </Badge>
                 </TableCell>
               </TableRow>

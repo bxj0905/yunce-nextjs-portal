@@ -8,13 +8,18 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
+export const metadata = {
+  title: '云策AI',
+  description: '云策AI管理平台',
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="zh-CN">
       <body className={`${outfit.className} dark:bg-gray-900`}>
         <ThemeProvider>
           <SidebarProvider>{children}</SidebarProvider>
