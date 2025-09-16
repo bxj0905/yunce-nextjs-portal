@@ -6,7 +6,7 @@ const isGhPages = process.env.DEPLOY_TARGET === 'gh-pages';
 const repoBase = isGhPages ? '/yunce-nextjs-portal' : '';
 
 const nextConfig: NextConfig = {
-  output: 'export',
+  ...(isGhPages ? { output: 'export' } : {}),
   ...(isGhPages ? { basePath: repoBase, assetPrefix: repoBase + '/' } : {}),
   trailingSlash: true,
   env: {

@@ -181,7 +181,10 @@ export default function ChatPage() {
       }),
     })
       .then(async (res) => {
-        if (!res.ok) throw new Error(await res.text());
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          throw new Error(`HTTP ${res.status} ${res.statusText}${txt ? ` - ${txt}` : ''}`);
+        }
         const reader = res.body?.getReader();
         if (!reader) throw new Error("无法读取流");
 
@@ -253,7 +256,7 @@ export default function ChatPage() {
                     {
                       id: `m-${Date.now()}-err`,
                       role: "assistant",
-                      text: `调用失败：${String(e)}`,
+                      text: `调用失败：${String(e)}\n\n请检查：\n1) Vercel 项目是否设置 DEEPSEEK_API_KEY (Server)\n2) 若使用外部接口，NEXT_PUBLIC_CHAT_API 是否正确且允许跨域 (CORS)\n3) 网络连通性`,
                       tone: "error",
                     },
                   ],
