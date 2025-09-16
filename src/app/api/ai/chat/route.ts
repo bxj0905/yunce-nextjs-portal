@@ -4,6 +4,16 @@ export const runtime = "nodejs";
 
 type Provider = "deepseek" | "gemini";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+  return new Response(null, { headers: corsHeaders });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { messages, temperature = 0.7, provider: clientProvider }: { messages: Array<{ role: string; content: string }>; temperature?: number; provider?: Provider } = await req.json();
@@ -17,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     if (provider === "gemini") {
       if (!hasGemini) {
-        return new Response("Missing GOOGLE_API_KEY", { status: 500 });
+        return new Response("Missing GOOGLE_API_KEY", { status: 500, headers: corsHeaders });
       }
 
       // 将 OpenAI 样式的消息转换为 Gemini 的 contents 结构
@@ -34,7 +44,7 @@ export async function POST(req: NextRequest) {
       });
       if (!gmRes.ok) {
         const txt = await gmRes.text().catch(() => "");
-        return new Response(`Upstream error (gemini): ${txt || gmRes.statusText}`, { status: 500 });
+        return new Response(`Upstream error (gemini): ${txt || gmRes.statusText}`, { status: 500, headers: corsHeaders });
       }
       type GeminiPart = { text?: string };
       type GeminiContent = { parts?: GeminiPart[] };
@@ -50,13 +60,13 @@ export async function POST(req: NextRequest) {
       // 非流式：一次性输出一条 delta，沿用前端解析协议
       const payload = JSON.stringify({ delta: text, reasoning: undefined });
       return new Response(payload + "\n", {
-        headers: { "Content-Type": "application/json; charset=utf-8" },
+        headers: { "Content-Type": "application/json; charset=utf-8", ...corsHeaders },
       });
     }
 
     // 默认 DeepSeek（流式）
     if (!hasDeepseek) {
-      return new Response("Missing DEEPSEEK_API_KEY", { status: 500 });
+      return new Response("Missing DEEPSEEK_API_KEY", { status: 500, headers: corsHeaders });
     }
 
     const dsRes = await fetch("https://api.deepseek.com/chat/completions", {
@@ -70,7 +80,7 @@ export async function POST(req: NextRequest) {
 
     if (!dsRes.ok || !dsRes.body) {
       const txt = await dsRes.text().catch(() => "");
-      return new Response(`Upstream error (deepseek): ${txt || dsRes.statusText}`, { status: 500 });
+      return new Response(`Upstream error (deepseek): ${txt || dsRes.statusText}`, { status: 500, headers: corsHeaders });
     }
 
     const decoder = new TextDecoder();
@@ -114,10 +124,11 @@ export async function POST(req: NextRequest) {
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
         "Transfer-Encoding": "chunked",
+        ...corsHeaders,
       },
     });
   } catch (e: unknown) {
-    return new Response(`Bad request: ${String(e)}`, { status: 400 });
+    return new Response(`Bad request: ${String(e)}`, { status: 400, headers: corsHeaders });
   }
 }
 
