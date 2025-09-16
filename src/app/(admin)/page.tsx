@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import React from "react";
 import Link from "next/link";
+import HeroQuickAsk from "./HeroQuickAsk";
 // Image 仅在 CardMedia 内部使用
 import CardMedia from "@/components/common/CardMedia";
+import HomeGrid from "./HomeGrid";
 import {
   DataAgentVisual,
   KnowledgeManagementVisual,
@@ -93,12 +95,9 @@ export default function Home() {
         <div className="relative z-10 max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10">
           {/* Announcement Banner */}
           <div className="flex justify-center">
-            <Link className="inline-flex items-center gap-x-2 bg-white border border-gray-200 text-sm text-gray-800 p-1 ps-3 rounded-full transition hover:border-gray-300 focus:outline-hidden focus:border-gray-300 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 dark:hover:border-neutral-600 dark:focus:border-neutral-600" href="/chat">
-              AI 2.0 版本发布 - 立即体验
-              <span className="py-1.5 px-2.5 inline-flex justify-center items-center gap-x-2 rounded-full bg-gray-200 font-semibold text-sm text-gray-600 dark:bg-neutral-700 dark:text-neutral-400">
-                <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-              </span>
-            </Link>
+            <div className="inline-flex items-center gap-x-2 bg-white border border-gray-200 text-sm text-gray-800 p-1 ps-3 rounded-full dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200">
+              AI 2.0 版本发布
+            </div>
           </div>
           {/* End Announcement Banner */}
 
@@ -115,33 +114,9 @@ export default function Home() {
             <p className="text-lg text-gray-600 dark:text-neutral-400">云策AI是新一代智能管理平台，集成多种AI智能应用，提供知识管理、数据处理、智能分析、智慧办公等全方位AI服务，让您的业务更智能、更高效。</p>
           </div>
 
-          {/* Buttons */}
+          {/* Quick Ask Only */}
           <div className="mt-8 gap-3 flex justify-center">
-            <Link className="inline-flex justify-center items-center gap-x-3 text-center bg-gradient-to-tl from-blue-600 to-violet-600 hover:from-violet-600 hover:to-blue-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-hidden focus:from-violet-600 focus:to-blue-600 py-3 px-4" href="/chat">
-              立即体验
-              <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-            </Link>
-            <button type="button" className="relative group p-2 ps-3 inline-flex items-center gap-x-2 text-sm font-mono rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800">
-              $ npm i yunce-ai
-              <span className="flex justify-center items-center bg-gray-200 rounded-md size-7 dark:bg-neutral-700 dark:text-neutral-400">
-                <svg className="shrink-0 size-4 group-hover:rotate-6 transition" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
-              </span>
-            </button>
-          </div>
-          {/* End Buttons */}
-
-          <div className="mt-5 flex flex-col sm:flex-row justify-center items-center gap-1.5 sm:gap-3">
-            <div className="flex flex-wrap gap-1 sm:gap-3">
-              <span className="text-sm text-gray-600 dark:text-neutral-400">技术栈:</span>
-              <span className="text-sm font-bold text-gray-900 dark:text-white">Next.js + AI</span>
-            </div>
-            <svg className="hidden sm:block size-5 text-gray-300 dark:text-neutral-600" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M6 13L10 3" stroke="currentColor" strokeLinecap="round"/>
-            </svg>
-            <a className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline focus:outline-hidden focus:underline font-medium dark:text-blue-500" href="#">
-              使用指南
-              <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-            </a>
+            <HeroQuickAsk />
           </div>
         </div>
       </div>
@@ -157,38 +132,8 @@ export default function Home() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
-          {allModules.map((item, index) => {
-            return (
-              <Link key={index} href={item.href} className="group block">
-                <div className="space-y-6">
-                  <div className="rounded-3xl overflow-hidden bg-base-200">
-                    <CardMedia
-                      videoSrc={cardVideos[index]}
-                      imageSrc={cardImages[index % cardImages.length]}
-                      alt={item.title}
-                    />
-                  </div>
-                  <div className="text-center px-4">
-                    <h3 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white">{item.title}</h3>
-                    <p className="mt-3 text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-                      {item.description}
-                    </p>
-                    <div className="mt-5">
-                      <button className="btn btn-neutral rounded-full gap-2 px-5 btn-sm md:btn-md">
-                        立即体验
-                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        <HomeGrid allModules={allModules} cardImages={cardImages} cardVideos={cardVideos} />
       </div>
-
-
 
       {/* Footer */}
       <footer className="footer sm:footer-horizontal bg-base-200 text-base-content p-10">
