@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import React from "react";
-import Link from "next/link";
 import HeroQuickAsk from "./HeroQuickAsk";
-// Image 仅在 CardMedia 内部使用
-import CardMedia from "@/components/common/CardMedia";
 import HomeGrid from "./HomeGrid";
 import {
   DataAgentVisual,

@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
               } catch {}
             }
           }
-        } catch (err: any) {
-          controller.error(err);
+        } catch (err: unknown) {
+          controller.error(err instanceof Error ? err : new Error(String(err)));
           return;
         }
         controller.close();
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         "Transfer-Encoding": "chunked",
       },
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return new Response(`Bad request: ${String(e)}`, { status: 400 });
   }
 }
